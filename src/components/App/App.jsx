@@ -29,6 +29,14 @@ const mockPlaylistTracks = [
   const [searchResults, setSearchResults] = useState(mockSearchResults);
   const [playlistTracks, setPlaylistTracks] = useState(mockPlaylistTracks);
 
+  function handleAddTrack(track) {
+    setPlaylistTracks([...playlistTracks, track]);
+  }
+
+  function handleRemoveTrack(track) {
+    setPlaylistTracks(playlistTracks.filter(track => track.id !== track.id));
+  }
+
 
   return (
     <div className={styles.appWrapper}>
