@@ -16,20 +16,26 @@ import Playlist from '../Playlist/Playlist';
 // we'll change the initial state to [] and the search handler will populate it.
 
 function App() {
-  
+  // Step 1: create mock data while we're not working w/ the Spotify API yet.
+
   const mockSearchResults = [
   { id: 1, name: 'Heroes', artist: 'David Bowie', album: '"Heroes"' },
   { id: 2, name: 'Life on Mars?', artist: 'David Bowie', album: 'Hunky Dory' },
   ];
 
-const mockPlaylistTracks = [
+  const mockPlaylistTracks = [
   { id: 3, name: 'Wish You Were Here', artist: 'Pink Floyd', album: 'Wish You Were Here' },
   ];
 
+ // Step 2: set up state to hold the search results and playlist tracks, initialized with the mock data.
   const [searchResults, setSearchResults] = useState(mockSearchResults);
   const [playlistTracks, setPlaylistTracks] = useState(mockPlaylistTracks);
-
+  
+ // Step 3: create the simpler handler functions to add to/remove tracks from the playlist
   function handleAddTrack(track) {
+    if (playlistTracks.some(t=> t.id === track.id)) {
+      return; // Track is already in the playlist, do nothing.
+    }
     setPlaylistTracks([...playlistTracks, track]);
   }
 
@@ -42,8 +48,14 @@ const mockPlaylistTracks = [
     <div className={styles.appWrapper}>
       <h1 className={styles.appTitle}>Jammming</h1>
         <SearchBar />
-        <SearchResults />
-        <Playlist />  
+        <SearchResults 
+        searchResults={searchResults} 
+        buttonLabel="+" 
+        onButtonClick={handleAddTrack}/>
+        <Playlist 
+        playlistTracks={playlistTracks} 
+        buttonLabel="-" 
+        onButtonClick={handleRemoveTrack}/>  
     </div>
   );
 }
