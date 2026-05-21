@@ -1,6 +1,6 @@
 import styles from './Track.module.css';
 
-function Track() {
+function Track( { track, buttonLabel, onButtonClick }) {
     return (
         <div className={styles.trackWrapper}>
            

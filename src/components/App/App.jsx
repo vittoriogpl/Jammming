@@ -49,11 +49,11 @@ function App() {
       <h1 className={styles.appTitle}>Jammming</h1>
         <SearchBar />
         <SearchResults 
-        searchResults={searchResults} 
+        tracks={searchResults} 
         buttonLabel="+" 
         onButtonClick={handleAddTrack}/>
         <Playlist 
-        playlistTracks={playlistTracks} 
+        tracks={playlistTracks} 
         buttonLabel="-" 
         onButtonClick={handleRemoveTrack}/>  
     </div>

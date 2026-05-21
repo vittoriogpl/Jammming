@@ -1,11 +1,11 @@
 import styles from './SearchResults.module.css';
 import Tracklist from '../Tracklist/Tracklist';
 
-function SearchResults() {
+function SearchResults({ tracks, buttonLabel, onButtonClick }) {
     return (
         <div className={styles.resultsWrapper}>
             <h2>Results</h2>
-            <Tracklist />
+            <Tracklist tracks={tracks} buttonLabel={buttonLabel} onButtonClick={onButtonClick}/>
         </div>
     );
 }

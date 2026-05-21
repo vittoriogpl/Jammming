@@ -1,10 +1,17 @@
 import styles from './Tracklist.module.css';
 import Track from '../Track/Track';
 
-function Tracklist() {
+function Tracklist( { tracks, buttonLabel, onButtonClick }) {
     return (
         <div className={styles.tracklistWrapper}>
-            <Track />
+            {tracks.map((track) => (
+                <Track
+                    key={track.id}
+                    track={track}
+                    buttonLabel={buttonLabel}
+                    onButtonClick={onButtonClick}
+                />
+            ))}
         </div>
     )
 
