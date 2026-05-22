@@ -8,7 +8,7 @@ function SearchBar({ onSearch }) {
         <div className={styles.searchBarWrapper}>
             <input 
                 type="text"
-                placeholder="Enter a song, album, or artist" 
+                placeholder="Enter a song name" 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyDown={(e) => {

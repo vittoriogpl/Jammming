@@ -38,6 +38,7 @@ function App() {
 
  // Step 2: set up state to hold the search results and playlist tracks, initialized with the mock data.
   const [searchResults, setSearchResults] = useState(mockSearchResults);
+  const [hasSearched, setHasSearched] = useState(false); // New state to track if a search has been performed
   const [playlistTracks, setPlaylistTracks] = useState(mockPlaylistTracks);
   
  // Step 3: create the simpler handler functions to add to/remove tracks from the playlist
@@ -53,7 +54,14 @@ function App() {
   }
 
   function handleSearch(searchTerm) {
-    // For now, we'll just log the search term to verify the SearchBar is working.
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    const filtered = mockLibrary.filter(track =>  
+      track.name.toLowerCase().includes(lowerSearchTerm) ||
+      track.artist.toLowerCase().includes(lowerSearchTerm) ||
+      track.album.toLowerCase().includes(lowerSearchTerm)
+    );
+    setSearchResults(filtered);
+    setHasSearched(true);
     console.log('Searching for:', searchTerm);
     // In a later step, this is where we'd call the Spotify API and update searchResults with the response.
   }
@@ -66,7 +74,8 @@ function App() {
         <SearchResults 
         tracks={searchResults} 
         buttonLabel="+" 
-        onButtonClick={handleAddTrack}/>
+        onButtonClick={handleAddTrack}
+        hasSearched={hasSearched}/>
         <Playlist 
         tracks={playlistTracks} 
         buttonLabel="-" 
