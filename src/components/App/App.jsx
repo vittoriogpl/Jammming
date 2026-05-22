@@ -40,14 +40,20 @@ function App() {
   }
 
   function handleRemoveTrack(track) {
-    setPlaylistTracks(playlistTracks.filter(track => track.id !== track.id));
+    setPlaylistTracks(playlistTracks.filter(t => t.id !== track.id));
+  }
+
+  function handleSearch(searchTerm) {
+    // For now, we'll just log the search term to verify the SearchBar is working.
+    console.log('Search term:', searchTerm);
+    // In a later step, this is where we'd call the Spotify API and update searchResults with the response.
   }
 
 
   return (
     <div className={styles.appWrapper}>
       <h1 className={styles.appTitle}>Jammming</h1>
-        <SearchBar />
+        <SearchBar onSearch={handleSearch}/>
         <SearchResults 
         tracks={searchResults} 
         buttonLabel="+" 
