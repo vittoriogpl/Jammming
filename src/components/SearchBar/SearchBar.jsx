@@ -17,7 +17,7 @@ function SearchBar({ onSearch }) {
                     }
                 }}
             />
-            <button onClick={() => onSearch(searchTerm)}>Search</button>
+            <button onClick={() => onSearch(searchTerm)} disabled={searchTerm.trim() === ''}>Search</button>
         </div>
     );
 }
