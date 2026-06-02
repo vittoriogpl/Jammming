@@ -77,18 +77,23 @@ function App() {
   return (
     <div className={styles.appWrapper}>
       <h1 className={styles.appTitle}>Jammming</h1>
-      {accessToken ? <SearchBar onSearch={handleSearch}/>
-      : <a href={authUrl} className={styles.loginLink}>Log in to Spotify</a>
-      }  
-        <SearchResults 
-        tracks={searchResults} 
-        buttonLabel="+" 
-        onButtonClick={handleAddTrack}
-        hasSearched={hasSearched}/>
-        <Playlist 
-        tracks={playlistTracks} 
-        buttonLabel="-" 
-        onButtonClick={handleRemoveTrack}/>  
+      {accessToken ? (
+        <>
+          <SearchBar onSearch={handleSearch} />
+          <SearchResults 
+          tracks={searchResults}
+          buttonLabel='+'
+          onButtonClick={handleAddTrack}
+          hasSearched={hasSearched}
+          />
+          <Playlist
+            tracks={playlistTracks}
+            buttonLabel='-'
+            onButtonClick={handleRemoveTrack} 
+            />
+          </>) : (
+            <a href={authUrl} className={styles.loginLink}>Log in to Spotify</a>
+          )}
     </div>
   );
 }
