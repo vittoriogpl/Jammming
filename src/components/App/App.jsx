@@ -21,6 +21,7 @@ const SCOPES = 'user-read-private playlist-modify-public';
 const authUrl = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(SCOPES)}`;
 
 function App() {
+
   // Step 1: create mock data while we're not working w/ the Spotify API yet.
 
   const mockSearchResults = [
@@ -42,6 +43,7 @@ function App() {
   ];
 
  // Step 2: set up state to hold the search results and playlist tracks, initialized with the mock data.
+  const [accessToken, setAccessToken] = useState(null);
   const [searchResults, setSearchResults] = useState(mockSearchResults);
   const [hasSearched, setHasSearched] = useState(false); // New state to track if a search has been performed
   const [playlistTracks, setPlaylistTracks] = useState(mockPlaylistTracks);
@@ -75,7 +77,9 @@ function App() {
   return (
     <div className={styles.appWrapper}>
       <h1 className={styles.appTitle}>Jammming</h1>
-        <SearchBar onSearch={handleSearch}/>
+      {accessToken ? <SearchBar onSearch={handleSearch}/>
+      : <a href={authUrl} className={styles.loginLink}>Log in to Spotify</a>
+      }  
         <SearchResults 
         tracks={searchResults} 
         buttonLabel="+" 
