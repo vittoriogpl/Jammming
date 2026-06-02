@@ -15,6 +15,11 @@ import Playlist from '../Playlist/Playlist';
 // Mock data gives you something to see. Once we wire up real search later, 
 // we'll change the initial state to [] and the search handler will populate it.
 
+const CLIENT_ID = '09b3e6507745423cb33b374bc980f73c';
+const REDIRECT_URI = 'http://127.0.0.1:5173/';
+const SCOPES = 'user-read-private playlist-modify-public';
+const authUrl = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(SCOPES)}`;
+
 function App() {
   // Step 1: create mock data while we're not working w/ the Spotify API yet.
 
