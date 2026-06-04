@@ -3,6 +3,7 @@ import styles from './App.module.css';
 import SearchBar from '../SearchBar/SearchBar';
 import SearchResults from '../SearchResults/SearchResults';
 import Playlist from '../Playlist/Playlist';
+import { generateCodeVerifier } from '../../utils/pkce';
 
 // Empty arrays (useState([])) match the app's real initial behavior — 
 // nothing shows up until the user does something. But the screen will look mostly blank during this phase, 
@@ -32,7 +33,7 @@ const SCOPES = 'user-read-private playlist-modify-public';
 
 
 function App() {
-
+  console.log(generateCodeVerifier());
   // Step 1: create mock data while we're not working w/ the Spotify API yet.
 
   const mockSearchResults = [
@@ -125,7 +126,7 @@ function App() {
             onButtonClick={handleRemoveTrack} 
             />
           </>) : (
-            <a href={authUrl} className={styles.loginLink}>Log in to Spotify</a>
+            <a href={"http://localhost:5173/"} className={styles.loginLink}>Log in to Spotify</a>
           )}
     </div>
   );
