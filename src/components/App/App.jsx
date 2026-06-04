@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './App.module.css';
 import SearchBar from '../SearchBar/SearchBar';
 import SearchResults from '../SearchResults/SearchResults';
@@ -18,7 +18,18 @@ import Playlist from '../Playlist/Playlist';
 const CLIENT_ID = '09b3e6507745423cb33b374bc980f73c';
 const REDIRECT_URI = 'http://127.0.0.1:5173/';
 const SCOPES = 'user-read-private playlist-modify-public';
-const authUrl = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(SCOPES)}`;
+
+// const hash = window.location.hash; "#access_token=BQD..."
+// hash is now "#access_token=BQD...&token_type=Bearer&expires_in=3600"
+// If the user visits your app without coming from Spotify, window.location.hash is just "" (empty string). 
+// That's how you'll detect "no token to extract."
+// const stripped = hash.substring(1); "access_token=BQD..."  (removes the #)
+// substring(1) returns everything from index 1 onward, effectively chopping off the first character (the #).
+// const params = new URLSearchParams(stripped); URLSearchParams expects the string without the leading #. 
+// So you have to strip it off first
+// const token = params.get('access_token'); "BQD..."
+// token is now "BQD123"
+
 
 function App() {
 
@@ -47,6 +58,28 @@ function App() {
   const [searchResults, setSearchResults] = useState(mockSearchResults);
   const [hasSearched, setHasSearched] = useState(false); // New state to track if a search has been performed
   const [playlistTracks, setPlaylistTracks] = useState(mockPlaylistTracks);
+
+  useEffect(() => {
+  // Step 1: Read the hash from the URL
+    const hash = window.location.hash;
+  
+  // Step 2: Check if there's anything to process
+  //         (the hash will be an empty string if no token is present)
+    if (hash) {
+    // Step 3: Strip the leading "#" and parse with URLSearchParams
+      const stripped = hash.substring(1);
+      const params = new URLSearchParams(stripped);
+      
+    // Step 4: Get the access token
+      const token = params.get('access_token');
+    // Step 5: If a token was found, store it in state with setAccessToken
+      if (token) {
+        setAccessToken(token);
+      }
+    // Step 6: Clean the URL with window.history.replaceState
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+  }, []);
   
  // Step 3: create the simpler handler functions to add to/remove tracks from the playlist
   function handleAddTrack(track) {
