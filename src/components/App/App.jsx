@@ -33,12 +33,6 @@ const SCOPES = 'user-read-private playlist-modify-public';
 
 
 function App() {
-  // Temporary test code - we'll remove this later
-  const testVerifier = generateCodeVerifier();
-  console.log('verifier:', testVerifier);
-  generateCodeChallenge(testVerifier).then(challenge => {
-    console.log('challenge:', challenge);
-  });
   // Step 1: create mock data while we're not working w/ the Spotify API yet.
 
   const mockSearchResults = [
