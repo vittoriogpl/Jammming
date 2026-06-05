@@ -125,7 +125,7 @@ function App() {
             onButtonClick={handleRemoveTrack} 
             />
           </>) : (
-            <a href={"http://localhost:5173/"} className={styles.loginLink}>Log in to Spotify</a>
+            <button onClick={handleLogin}>Log in with Spotify</button>
           )}
     </div>
   );
