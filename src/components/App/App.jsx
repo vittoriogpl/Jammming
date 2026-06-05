@@ -33,31 +33,12 @@ const SCOPES = 'user-read-private playlist-modify-public';
 
 
 function App() {
-  // Step 1: create mock data while we're not working w/ the Spotify API yet.
 
-  const mockSearchResults = [
-  { id: 1, name: 'Heroes', artist: 'David Bowie', album: '"Heroes"' },
-  { id: 2, name: 'Life on Mars?', artist: 'David Bowie', album: 'Hunky Dory' },
-  ];
-
-  const mockPlaylistTracks = [
-  { id: 3, name: 'Wish You Were Here', artist: 'Pink Floyd', album: 'Wish You Were Here' },
-  ];
-
-  const mockLibrary = [
-    { id: 1, name: 'Heroes', artist: 'David Bowie', album: '"Heroes"' },
-    { id: 2, name: 'Life on Mars?', artist: 'David Bowie', album: 'Hunky Dory' },
-    { id: 3, name: 'Wish You Were Here', artist: 'Pink Floyd', album: 'Wish You Were Here' },
-    { id: 4, name: 'Bohemian Rhapsody', artist: 'Queen', album: 'A Night at the Opera' },
-    { id: 5, name: 'Stairway to Heaven', artist: 'Led Zeppelin', album: 'Led Zeppelin IV' },
-    { id: 6, name: 'Brick on the Wall', artist: 'Pink Floyd', album: 'The Wall' },
-  ];
-
- // Step 2: set up state to hold the search results and playlist tracks, initialized with the mock data.
+ // Set up state to hold the search results and playlist tracks
   const [accessToken, setAccessToken] = useState(null);
-  const [searchResults, setSearchResults] = useState(mockSearchResults);
+  const [searchResults, setSearchResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false); // New state to track if a search has been performed
-  const [playlistTracks, setPlaylistTracks] = useState(mockPlaylistTracks);
+  const [playlistTracks, setPlaylistTracks] = useState([]);
 
   useEffect(() => {
 	  async function exchangeCodeForToken() {
