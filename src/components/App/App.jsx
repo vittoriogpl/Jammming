@@ -60,25 +60,46 @@ function App() {
   const [playlistTracks, setPlaylistTracks] = useState(mockPlaylistTracks);
 
   useEffect(() => {
-  // Step 1: Read the hash from the URL
-    const hash = window.location.hash;
-  
-  // Step 2: Check if there's anything to process
-  //         (the hash will be an empty string if no token is present)
-    if (hash) {
-    // Step 3: Strip the leading "#" and parse with URLSearchParams
-      const stripped = hash.substring(1);
-      const params = new URLSearchParams(stripped);
+	  async function exchangeCodeForToken() {
+
+  // 1. Read the query string from the URL
+      const search = window.location.search;
+  // 2. Parse it with URLSearchParams and get the 'code' parameter
+      const params = new URLSearchParams(search);
+      const code = params.get("code");
+  // 3. If there's no code, exit early (the user hasn't logged in yet)
+      if (!code) return;
+  // 4. Retrieve the verifier from sessionStorage
+      const verifier = sessionStorage.getItem('spotify_code_verifier');
+  // 5. Build the request body using URLSearchParams (same approach for building form-encoded data)
+  //    Include all 5 required fields
+      const body = new URLSearchParams({
+      client_id: CLIENT_ID,
+      grant_type: 'authorization_code',
+      code: code,
+      redirect_uri: REDIRECT_URI,
+      code_verifier: verifier
+      });
       
-    // Step 4: Get the access token
-      const token = params.get('access_token');
-    // Step 5: If a token was found, store it in state with setAccessToken
-      if (token) {
-        setAccessToken(token);
-      }
-    // Step 6: Clean the URL with window.history.replaceState
-      window.history.replaceState(null, '', window.location.pathname);
-    }
+
+  // 6. Make the POST fetch to <https://accounts.spotify.com/api/token>
+  //    Include method, headers, and body
+        const response = await fetch('https://accounts.spotify.com/api/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: body,
+        });
+  // 7. Parse the JSON response
+        const data = await response.json();
+  // 8. Call setAccessToken with the access_token from the response
+        setAccessToken(data.access_token);
+  // 9. Clean the URL (window.history.replaceState)
+        window.history.replaceState(null, '', window.location.pathname);
+  // 10. Remove the verifier from sessionStorage
+        sessionStorage.removeItem('spotify_code_verifier');
+  }
+
+    exchangeCodeForToken();
   }, []);
   
  // Step 3: create the simpler handler functions to add to/remove tracks from the playlist
