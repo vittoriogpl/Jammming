@@ -106,6 +106,13 @@ function App() {
     // In a later step, this is where we'd call the Spotify API and update searchResults with the response.
   }
 
+  async function handleLogin() {
+    const codeVerifier = generateCodeVerifier();
+    const codeChallenge = await generateCodeChallenge(codeVerifier);
+    sessionStorage.setItem('spotify_code_verifier', codeVerifier);
+    const authUrl = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(SCOPES)}&code_challenge_method=S256&code_challenge=${codeChallenge}`;
+    window.location = authUrl;
+  }
 
   return (
     <div className={styles.appWrapper}>
@@ -125,7 +132,7 @@ function App() {
             onButtonClick={handleRemoveTrack} 
             />
           </>) : (
-            <button onClick={handleLogin}>Log in with Spotify</button>
+            <button onClick={handleLogin} className={styles.loginBtn}>Log in to Spotify</button>
           )}
     </div>
   );
