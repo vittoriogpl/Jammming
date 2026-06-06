@@ -95,18 +95,49 @@ function App() {
     setPlaylistTracks(playlistTracks.filter(t => t.id !== track.id));
   }
 
-  function handleSearch(searchTerm) {
-    const lowerSearchTerm = searchTerm.toLowerCase();
-    const filtered = mockLibrary.filter(track =>  
-      track.name.toLowerCase().includes(lowerSearchTerm) ||
-      track.artist.toLowerCase().includes(lowerSearchTerm) ||
-      track.album.toLowerCase().includes(lowerSearchTerm)
-    );
-    setSearchResults(filtered);
+  async function handleSearch(query) {
+  // 1. Build the search URL with query, type=track, limit=20
+  //    (Use either a template literal with encodeURIComponent on the query, 
+  //     or URLSearchParams with `${searchUrl}?${params.toString()}`)
+    const params = new URLSearchParams({
+      q: query,
+      type: 'track',
+      limit: 20
+    });
+    const searchEndpoint = 'https://api.spotify.com/v1/search';
+    const searchUrl = `${searchEndpoint}?${params.toString()}`;
+  // 2. Make a GET fetch with the Authorization header
+    const response = await fetch(searchUrl, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+  // 3. Parse the JSON response
+    const data = await response.json();
+  // 4. Transform Spotify's tracks into your Track shape
+  //    (Use .map on data.tracks.items)
+    const transformedTracks = data.tracks.items.map(item =>({
+      id: item.id,
+      name: item.name,
+      artist: item.artists[0].name, // Just take the first artist for simplicity
+      album: item.album.name,
+      uri: item.uri
+    }));
+  // 5. Update state: setSearchResults(transformedTracks) and setHasSearched(true)
+    setSearchResults(transformedTracks);
     setHasSearched(true);
-    console.log('Searching for:', searchTerm);
-    // In a later step, this is where we'd call the Spotify API and update searchResults with the response.
   }
+
+  // function handleSearch(searchTerm) {
+  //   const lowerSearchTerm = searchTerm.toLowerCase();
+  //   const filtered = mockLibrary.filter(track =>  
+  //     track.name.toLowerCase().includes(lowerSearchTerm) ||
+  //     track.artist.toLowerCase().includes(lowerSearchTerm) ||
+  //     track.album.toLowerCase().includes(lowerSearchTerm)
+  //   );
+    
+  //   console.log('Searching for:', searchTerm);
+  // }
 
   async function handleLogin() {
     const codeVerifier = generateCodeVerifier();
