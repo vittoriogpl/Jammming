@@ -128,17 +128,6 @@ function App() {
     setHasSearched(true);
   }
 
-  // function handleSearch(searchTerm) {
-  //   const lowerSearchTerm = searchTerm.toLowerCase();
-  //   const filtered = mockLibrary.filter(track =>  
-  //     track.name.toLowerCase().includes(lowerSearchTerm) ||
-  //     track.artist.toLowerCase().includes(lowerSearchTerm) ||
-  //     track.album.toLowerCase().includes(lowerSearchTerm)
-  //   );
-    
-  //   console.log('Searching for:', searchTerm);
-  // }
-
   async function handleLogin() {
     const codeVerifier = generateCodeVerifier();
     const codeChallenge = await generateCodeChallenge(codeVerifier);
