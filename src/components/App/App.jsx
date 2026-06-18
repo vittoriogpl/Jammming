@@ -5,32 +5,18 @@ import SearchResults from '../SearchResults/SearchResults';
 import Playlist from '../Playlist/Playlist';
 import { generateCodeVerifier, generateCodeChallenge } from '../../utils/pkce';
 
-// Empty arrays (useState([])) match the app's real initial behavior — 
-// nothing shows up until the user does something. But the screen will look mostly blank during this phase, 
-// which makes it hard to verify that the rendering logic actually works. 
-// Pre-populated arrays (an array of 3-4 mock song objects) let you see the UI come to life immediately —
-// you can confirm Tracklist renders, Track displays the right fields, whether styling looks right, etc. 
-// But it's "fake" in the sense that real users won't see this initial state.
-// For this static phase, pre-populated is a better choice. The goal right now isn't to simulate real app behavior — 
-// it's to verify if components render correctly and if props flow through the hierarchy. 
-// Mock data gives you something to see. Once we wire up real search later, 
-// we'll change the initial state to [] and the search handler will populate it.
-
 const CLIENT_ID = '09b3e6507745423cb33b374bc980f73c';
 const REDIRECT_URI = 'http://127.0.0.1:5173/';
 const SCOPES = 'user-read-private playlist-modify-public';
 
-// const hash = window.location.hash; "#access_token=BQD..."
-// hash is now "#access_token=BQD...&token_type=Bearer&expires_in=3600"
-// If the user visits your app without coming from Spotify, window.location.hash is just "" (empty string). 
-// That's how you'll detect "no token to extract."
-// const stripped = hash.substring(1); "access_token=BQD..."  (removes the #)
-// substring(1) returns everything from index 1 onward, effectively chopping off the first character (the #).
-// const params = new URLSearchParams(stripped); URLSearchParams expects the string without the leading #. 
-// So you have to strip it off first
-// const token = params.get('access_token'); "BQD..."
-// token is now "BQD123"
-
+const MOCK_LIBRARY = [
+  { id: 1, name: 'Heroes', artist: 'David Bowie', album: '"Heroes"', uri: 'spotify:track:7Jh1bpe76CNTCgdgAdBw4Z' },
+  { id: 2, name: 'Life on Mars?', artist: 'David Bowie', album: 'Hunky Dory', uri: 'spotify:track:3ZE3w8uVBAh9bdGcUmsTz5' },
+  { id: 3, name: 'Wish You Were Here', artist: 'Pink Floyd', album: 'Wish You Were Here', uri: 'spotify:track:7aE5WXu5sFeNRh3Z05wwu0' },
+  { id: 4, name: 'Bohemian Rhapsody', artist: 'Queen', album: 'A Night at the Opera', uri: 'spotify:track:3z8h0TU7ReDPLIbEnYhWZb' },
+  { id: 5, name: 'Stairway to Heaven', artist: 'Led Zeppelin', album: 'Led Zeppelin IV', uri: 'spotify:track:5CQ30WqJwcep0pYcV4AMNc' },
+  { id: 6, name: 'Smells Like Teen Spirit', artist: 'Nirvana', album: 'Nevermind', uri: 'spotify:track:5ghIJDpPoe3CfHMGu71E6T' },
+  { id: 7, name: 'Imagine', artist: 'John Lennon', album: 'Imagine', uri: 'spotify:track:7pKfPomDEeI4TPT6EOYjn9' },];
 
 function App() {
 
@@ -44,40 +30,51 @@ function App() {
 	  async function exchangeCodeForToken() {
 
   // 1. Read the query string from the URL
+
       const search = window.location.search;
   // 2. Parse it with URLSearchParams and get the 'code' parameter
+
       const params = new URLSearchParams(search);
       const code = params.get("code");
   // 3. If there's no code, exit early (the user hasn't logged in yet)
+
       if (!code) return;
-  // 4. Retrieve the verifier from sessionStorage
+
+  // 4. Guard against double-execution from Strict Mode
+
       const verifier = sessionStorage.getItem('spotify_code_verifier');
+      if (!verifier) return;
+
+      // Remove the verifier IMMEDIATELY so the second run finds nothing
+      sessionStorage.removeItem('spotify_code_verifier');
+
   // 5. Build the request body using URLSearchParams (same approach for building form-encoded data)
   //    Include all 5 required fields
+
       const body = new URLSearchParams({
-      client_id: CLIENT_ID,
-      grant_type: 'authorization_code',
-      code: code,
-      redirect_uri: REDIRECT_URI,
-      code_verifier: verifier
+        client_id: CLIENT_ID,
+        grant_type: 'authorization_code',
+        code: code,
+        redirect_uri: REDIRECT_URI,
+        code_verifier: verifier
       });
       
-
   // 6. Make the POST fetch to <https://accounts.spotify.com/api/token>
   //    Include method, headers, and body
-        const response = await fetch('https://accounts.spotify.com/api/token', {
+
+      const response = await fetch('https://accounts.spotify.com/api/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: body,
         });
   // 7. Parse the JSON response
         const data = await response.json();
+
   // 8. Call setAccessToken with the access_token from the response
         setAccessToken(data.access_token);
+
   // 9. Clean the URL (window.history.replaceState)
         window.history.replaceState(null, '', window.location.pathname);
-  // 10. Remove the verifier from sessionStorage
-        sessionStorage.removeItem('spotify_code_verifier');
   }
 
     exchangeCodeForToken();
@@ -96,35 +93,13 @@ function App() {
   }
 
   async function handleSearch(query) {
-  // 1. Build the search URL with query, type=track, limit=20
-  //    (Use either a template literal with encodeURIComponent on the query, 
-  //     or URLSearchParams with `${searchUrl}?${params.toString()}`)
-    const params = new URLSearchParams({
-      q: query,
-      type: 'track',
-      limit: 20
-    });
-    const searchEndpoint = 'https://api.spotify.com/v1/search';
-    const searchUrl = `${searchEndpoint}?${params.toString()}`;
-  // 2. Make a GET fetch with the Authorization header
-    const response = await fetch(searchUrl, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
-    });
-  // 3. Parse the JSON response
-    const data = await response.json();
-  // 4. Transform Spotify's tracks into your Track shape
-  //    (Use .map on data.tracks.items)
-    const transformedTracks = data.tracks.items.map(item =>({
-      id: item.id,
-      name: item.name,
-      artist: item.artists[0].name, // Just take the first artist for simplicity
-      album: item.album.name,
-      uri: item.uri
-    }));
-  // 5. Update state: setSearchResults(transformedTracks) and setHasSearched(true)
-    setSearchResults(transformedTracks);
+    const lowerQuery = query.toLowerCase();
+    const filtered = mockLibrary.filter(track =>
+      track.name.toLowerCase().includes(lowerQuery) ||
+      track.artist.toLowerCase().includes(lowerQuery) ||
+      track.album.toLowerCase().includes(lowerQuery)
+    );
+    setSearchResults(filtered);
     setHasSearched(true);
   }
 
