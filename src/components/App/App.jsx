@@ -25,6 +25,8 @@ function App() {
   const [searchResults, setSearchResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false); // New state to track if a search has been performed
   const [playlistTracks, setPlaylistTracks] = useState([]);
+  const [userId, setUserId] = useState(null);
+  const [playlistName, setPlaylistName] = useState('');
 
   useEffect(() => {
 	  async function exchangeCodeForToken() {
@@ -73,12 +75,23 @@ function App() {
   // 8. Call setAccessToken with the access_token from the response
         setAccessToken(data.access_token);
 
+        const meResponse = await fetch('https://api.spotify.com/v1/me', {
+          headers: { 'Authorization': `Bearer ${data.access_token}` }
+        });
+        const meData = await meResponse.json();
+        if (meResponse.ok) {
+          setUserId(meData.id);
+        }
+        
+
   // 9. Clean the URL (window.history.replaceState)
         window.history.replaceState(null, '', window.location.pathname);
   }
 
     exchangeCodeForToken();
   }, []);
+
+  console.log('userId:', userId);
   
  // Step 3: create the simpler handler functions to add to/remove tracks from the playlist
   function handleAddTrack(track) {
