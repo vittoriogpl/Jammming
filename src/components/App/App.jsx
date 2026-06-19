@@ -7,7 +7,7 @@ import { generateCodeVerifier, generateCodeChallenge } from '../../utils/pkce';
 
 const CLIENT_ID = '09b3e6507745423cb33b374bc980f73c';
 const REDIRECT_URI = 'http://127.0.0.1:5173/';
-const SCOPES = 'user-read-private playlist-modify-public';
+const SCOPES = 'user-read-private playlist-modify-public playlist-modify-private';
 
 const MOCK_LIBRARY = [
   { id: 1, name: 'Heroes', artist: 'David Bowie', album: '"Heroes"', uri: 'spotify:track:7Jh1bpe76CNTCgdgAdBw4Z' },
