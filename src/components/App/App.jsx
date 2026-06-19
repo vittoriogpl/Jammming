@@ -11,7 +11,7 @@ const SCOPES = 'user-read-private playlist-modify-public playlist-modify-private
 
 const MOCK_LIBRARY = [
   { id: 1, name: 'Heroes', artist: 'David Bowie', album: '"Heroes"', uri: 'spotify:track:7Jh1bpe76CNTCgdgAdBw4Z' },
-  { id: 2, name: 'Life on Mars?', artist: 'David Bowie', album: 'Hunky Dory', uri: 'spotify:track:3ZE3w8uVBAh9bdGcUmsTz5' },
+  { id: 2, name: 'Life on Mars?', artist: 'David Bowie', album: 'Hunky Dory', uri: 'spotify:track:3ZE3wv8V3w2T2f7nOCjV0N' },
   { id: 3, name: 'Wish You Were Here', artist: 'Pink Floyd', album: 'Wish You Were Here', uri: 'spotify:track:7aE5WXu5sFeNRh3Z05wwu0' },
   { id: 4, name: 'Bohemian Rhapsody', artist: 'Queen', album: 'A Night at the Opera', uri: 'spotify:track:3z8h0TU7ReDPLIbEnYhWZb' },
   { id: 5, name: 'Stairway to Heaven', artist: 'Led Zeppelin', album: 'Led Zeppelin IV', uri: 'spotify:track:5CQ30WqJwcep0pYcV4AMNc' },
