@@ -191,7 +191,10 @@ function App() {
           <Playlist
             tracks={playlistTracks}
             buttonLabel='-'
-            onButtonClick={handleRemoveTrack} 
+            onButtonClick={handleRemoveTrack}
+            playlistName={playlistName}
+            onNameChange={setPlaylistName}
+            onSavePlaylist={handleSavePlaylist} 
             />
           </>) : (
             <button onClick={handleLogin} className={styles.loginBtn}>Log in to Spotify</button>
