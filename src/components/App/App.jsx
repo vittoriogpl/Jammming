@@ -75,6 +75,7 @@ function App() {
   // 8. Call setAccessToken with the access_token from the response
         setAccessToken(data.access_token);
 
+  // 9. Fetch user's Spotify ID with a GET /me fetch
         const meResponse = await fetch('https://api.spotify.com/v1/me', {
           headers: { 'Authorization': `Bearer ${data.access_token}` }
         });
@@ -83,15 +84,12 @@ function App() {
           setUserId(meData.id);
         }
         
-
-  // 9. Clean the URL (window.history.replaceState)
+  // 10. Clean the URL (window.history.replaceState)
         window.history.replaceState(null, '', window.location.pathname);
   }
 
     exchangeCodeForToken();
   }, []);
-
-  console.log('userId:', userId);
   
  // Step 3: create the simpler handler functions to add to/remove tracks from the playlist
   function handleAddTrack(track) {
@@ -122,6 +120,60 @@ function App() {
     sessionStorage.setItem('spotify_code_verifier', codeVerifier);
     const authUrl = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(SCOPES)}&code_challenge_method=S256&code_challenge=${codeChallenge}`;
     window.location = authUrl;
+  }
+
+  async function handleSavePlaylist() {
+    // 1. Guard: don't save if there's no playlist name or no tracks
+    if (!playlistName.trim() || playlistTracks.length === 0) {
+      return;
+    }
+
+    // 2. Build the array of URIs from playlistTracks
+    const uris = playlistTracks.map(track => track.uri);
+
+    // 3. First API call: POST /v1/me/playlists to create the playlist
+
+    const createResponse = await fetch('https://api.spotify.com/v1/me/playlists', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: playlistName,
+        public: false,
+      }),
+    });
+
+    if (!createResponse.ok) {
+      console.error('Failed to create playlist.');
+      return;
+    }
+
+    const createData = await createResponse.json();
+    const playlistId = createData.id;
+
+    // 4. Second API call: POST /v1/playlists/{playlistId}/tracks to add the URIs
+
+    const addResponse = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        uris: uris
+      }),
+    });
+
+    if (!addResponse.ok) {
+      console.error('Failed to add tracks.');
+      return;
+    }
+
+    // 5. Local cleanup: empty playlistTracks state, clear playlistName state
+    setPlaylistTracks([]);
+    setPlaylistName('');
   }
 
   return (
