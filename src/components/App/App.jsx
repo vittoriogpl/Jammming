@@ -105,7 +105,7 @@ function App() {
 
   async function handleSearch(query) {
     const lowerQuery = query.toLowerCase();
-    const filtered = mockLibrary.filter(track =>
+    const filtered = MOCK_LIBRARY.filter(track =>
       track.name.toLowerCase().includes(lowerQuery) ||
       track.artist.toLowerCase().includes(lowerQuery) ||
       track.album.toLowerCase().includes(lowerQuery)

@@ -9,10 +9,12 @@ function Playlist({ tracks, buttonLabel, onButtonClick, playlistName, onNameChan
                 type="text"
                 placeholder="Enter playlist name"
                 value={playlistName}
-                onChange={onNameChange}
+                onChange={(e) => onNameChange(e.target.value)}
             />
             <Tracklist tracks={tracks} buttonLabel={buttonLabel} onButtonClick={onButtonClick}/>
-            <button className={styles.savePlaylistBtn} onClick={onSavePlaylist}>Save to Spotify</button>
+            <button className={styles.savePlaylistBtn}
+             onClick={onSavePlaylist} 
+             disabled={!playlistName.trim() || tracks.length === 0}>Save to Spotify</button>
         </div>
     )
 }
