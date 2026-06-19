@@ -155,7 +155,7 @@ function App() {
 
     // 4. Second API call: POST /v1/playlists/{playlistId}/tracks to add the URIs
 
-    const addResponse = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+    const addResponse = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/items`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
