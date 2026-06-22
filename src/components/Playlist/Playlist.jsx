@@ -1,7 +1,7 @@
 import styles from './Playlist.module.css';
 import Tracklist from '../Tracklist/Tracklist';
 
-function Playlist({ tracks, buttonLabel, onButtonClick, playlistName, onNameChange, onSavePlaylist }) {
+function Playlist({ tracks, buttonLabel, onButtonClick, playlistName, onNameChange, onSavePlaylist, saveStatus }) {
     return (
         <div className={styles.playlistWrapper}>
             <input

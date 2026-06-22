@@ -20,7 +20,6 @@ const MOCK_LIBRARY = [
 
 function App() {
 
- // Set up state to hold the search results and playlist tracks
   const [accessToken, setAccessToken] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false); // New state to track if a search has been performed
@@ -32,14 +31,13 @@ function App() {
 	  async function exchangeCodeForToken() {
 
   // 1. Read the query string from the URL
-
       const search = window.location.search;
-  // 2. Parse it with URLSearchParams and get the 'code' parameter
 
+  // 2. Parse it with URLSearchParams and .get the 'code' parameter
       const params = new URLSearchParams(search);
       const code = params.get("code");
-  // 3. If there's no code, exit early (the user hasn't logged in yet)
 
+  // 3. If there's no code, exit early
       if (!code) return;
 
   // 4. Guard against double-execution from Strict Mode
@@ -50,8 +48,7 @@ function App() {
       // Remove the verifier IMMEDIATELY so the second run finds nothing
       sessionStorage.removeItem('spotify_code_verifier');
 
-  // 5. Build the request body using URLSearchParams (same approach for building form-encoded data)
-  //    Include all 5 required fields
+  // 5. Build the request body using URLSearchParams
 
       const body = new URLSearchParams({
         client_id: CLIENT_ID,
@@ -62,13 +59,13 @@ function App() {
       });
       
   // 6. Make the POST fetch to <https://accounts.spotify.com/api/token>
-  //    Include method, headers, and body
 
       const response = await fetch('https://accounts.spotify.com/api/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: body,
         });
+
   // 7. Parse the JSON response
         const data = await response.json();
 
@@ -113,6 +110,7 @@ function App() {
   }
 
   // Helper function to handle playlist name changes + clears any existing save status message
+
   function handleNameChange(newName) {
     setSaveStatus(null);
     setPlaylistName(newName);
@@ -127,7 +125,8 @@ function App() {
   }
 
   async function handleSavePlaylist() {
-    // 1. Guard: don't save if there's no playlist name or no tracks
+    // Guard: don't save if there's no playlist name or no tracks
+
     if (!playlistName.trim() || playlistTracks.length === 0) {
       return;
     }
@@ -135,10 +134,12 @@ function App() {
     setSaveStatus(null); // clear any previous message before trying again
 
     try {
-      // 2. Build the array of URIs from playlistTracks
+      // Build the array of URIs from playlistTracks
+
       const uris = playlistTracks.map(track => track.uri);
 
-      // 3. First API call: POST /v1/me/playlists to create the playlist
+      // First API call: POST /v1/me/playlists to create the playlist
+
       const createResponse = await fetch('https://api.spotify.com/v1/me/playlists', {
       method: 'POST',
       headers: {
@@ -158,7 +159,7 @@ function App() {
       const createData = await createResponse.json();
       const playlistId = createData.id;
 
-      // 4. Second API call: POST /v1/playlists/{playlistId}/tracks to add the URIs
+      // Second API call: POST /v1/playlists/{playlistId}/tracks to add the URIs
 
       const addResponse = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/items`, {
         method: 'POST',
@@ -175,7 +176,8 @@ function App() {
         throw new Error(`Failed to add tracks (status ${addResponse.status})`);
       }
 
-      // 5. Local cleanup: empty playlistTracks state, clear playlistName state, success message
+      // Local cleanup: empty playlistTracks state, clear playlistName state, success message
+
       setPlaylistTracks([]);
       setPlaylistName('');
       setSaveStatus({ message: 'Playlist saved to Spotify!', type: 'success' });
