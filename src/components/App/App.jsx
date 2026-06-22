@@ -93,7 +93,10 @@ function App() {
   }, []);
   
  // Step 3: create the simpler handler functions to add to/remove tracks from the playlist
+
   function handleAddTrack(track) {
+    setSaveStatus(null);  // clear any save message
+
     if (playlistTracks.some(t=> t.id === track.id)) {
       return; // Track is already in the playlist, do nothing.
     }
@@ -176,7 +179,7 @@ function App() {
       setPlaylistTracks([]);
       setPlaylistName('');
       setSaveStatus('Playlist saved to Spotify!');
-      
+
     } catch (error) {
       console.error(error);
       setSaveStatus('Could not save playlist. Please try again.');
