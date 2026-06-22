@@ -178,11 +178,11 @@ function App() {
       // 5. Local cleanup: empty playlistTracks state, clear playlistName state, success message
       setPlaylistTracks([]);
       setPlaylistName('');
-      setSaveStatus('Playlist saved to Spotify!');
+      setSaveStatus({ message: 'Playlist saved to Spotify!', type: 'success' });
 
     } catch (error) {
       console.error(error);
-      setSaveStatus('Could not save playlist. Please try again.');
+      setSaveStatus({ message: 'Could not save playlist. Please try again.', type: 'error' });
     }
   }
 
