@@ -16,7 +16,9 @@ function Playlist({ tracks, buttonLabel, onButtonClick, playlistName, onNameChan
              onClick={onSavePlaylist} 
              disabled={!playlistName.trim() || tracks.length === 0}>Save to Spotify</button>
              {saveStatus && (
-                <p className={saveStatus.type === 'success' ? styles.saveSuccess : styles.saveError}>
+                <p 
+                    role={saveStatus.type === 'error' ? 'alert' : 'status'} // makes messages accessible to screen readers
+                    className={saveStatus.type === 'success' ? styles.saveSuccess : styles.saveError}>
                     {saveStatus.message}
                 </p>
              )}
