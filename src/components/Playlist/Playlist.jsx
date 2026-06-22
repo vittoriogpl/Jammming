@@ -15,6 +15,7 @@ function Playlist({ tracks, buttonLabel, onButtonClick, playlistName, onNameChan
             <button className={styles.savePlaylistBtn}
              onClick={onSavePlaylist} 
              disabled={!playlistName.trim() || tracks.length === 0}>Save to Spotify</button>
+             {saveStatus && <p className={styles.saveStatus}>{saveStatus}</p>}
         </div>
     )
 }

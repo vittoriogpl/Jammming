@@ -27,6 +27,7 @@ function App() {
   const [playlistTracks, setPlaylistTracks] = useState([]);
   const [userId, setUserId] = useState(null);
   const [playlistName, setPlaylistName] = useState('');
+  const [saveStatus, setSaveStatus] = useState(null);
 
   useEffect(() => {
 	  async function exchangeCodeForToken() {
@@ -128,12 +129,14 @@ function App() {
       return;
     }
 
-    // 2. Build the array of URIs from playlistTracks
-    const uris = playlistTracks.map(track => track.uri);
+    setSaveStatus(null); // clear any previous message before trying again
 
-    // 3. First API call: POST /v1/me/playlists to create the playlist
+    try {
+      // 2. Build the array of URIs from playlistTracks
+      const uris = playlistTracks.map(track => track.uri);
 
-    const createResponse = await fetch('https://api.spotify.com/v1/me/playlists', {
+      // 3. First API call: POST /v1/me/playlists to create the playlist
+      const createResponse = await fetch('https://api.spotify.com/v1/me/playlists', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
@@ -145,35 +148,39 @@ function App() {
       }),
     });
 
-    if (!createResponse.ok) {
-      console.error('Failed to create playlist.');
-      return;
+      if (!createResponse.ok) {
+      throw new Error(`Failed to create playlist (status ${createResponse.status})`);
+      }
+
+      const createData = await createResponse.json();
+      const playlistId = createData.id;
+
+      // 4. Second API call: POST /v1/playlists/{playlistId}/tracks to add the URIs
+
+      const addResponse = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/items`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          uris: uris
+        }),
+      });
+
+      if (!addResponse.ok) {
+        throw new Error(`Failed to add tracks (status ${addResponse.status})`);
+      }
+
+      // 5. Local cleanup: empty playlistTracks state, clear playlistName state, success message
+      setPlaylistTracks([]);
+      setPlaylistName('');
+      setSaveStatus('Playlist saved to Spotify!');
+      
+    } catch (error) {
+      console.error(error);
+      setSaveStatus('Could not save playlist. Please try again.');
     }
-
-    const createData = await createResponse.json();
-    const playlistId = createData.id;
-
-    // 4. Second API call: POST /v1/playlists/{playlistId}/tracks to add the URIs
-
-    const addResponse = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/items`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        uris: uris
-      }),
-    });
-
-    if (!addResponse.ok) {
-      console.error('Failed to add tracks.');
-      return;
-    }
-
-    // 5. Local cleanup: empty playlistTracks state, clear playlistName state
-    setPlaylistTracks([]);
-    setPlaylistName('');
   }
 
   return (
@@ -194,7 +201,8 @@ function App() {
             onButtonClick={handleRemoveTrack}
             playlistName={playlistName}
             onNameChange={setPlaylistName}
-            onSavePlaylist={handleSavePlaylist} 
+            onSavePlaylist={handleSavePlaylist}
+            saveStatus={saveStatus} 
             />
           </>) : (
             <button onClick={handleLogin} className={styles.loginBtn}>Log in to Spotify</button>
