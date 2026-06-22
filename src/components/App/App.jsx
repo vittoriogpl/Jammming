@@ -104,10 +104,14 @@ function App() {
   }
 
   function handleRemoveTrack(track) {
+    setSaveStatus(null);
+
     setPlaylistTracks(playlistTracks.filter(t => t.id !== track.id));
   }
 
   async function handleSearch(query) {
+    setSaveStatus(null);
+    
     const lowerQuery = query.toLowerCase();
     const filtered = MOCK_LIBRARY.filter(track =>
       track.name.toLowerCase().includes(lowerQuery) ||
