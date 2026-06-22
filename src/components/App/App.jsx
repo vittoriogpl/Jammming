@@ -111,7 +111,7 @@ function App() {
 
   async function handleSearch(query) {
     setSaveStatus(null);
-    
+
     const lowerQuery = query.toLowerCase();
     const filtered = MOCK_LIBRARY.filter(track =>
       track.name.toLowerCase().includes(lowerQuery) ||
@@ -120,6 +120,12 @@ function App() {
     );
     setSearchResults(filtered);
     setHasSearched(true);
+  }
+
+  // Helper function to handle playlist name changes + clears any existing save status message
+  function handleNameChange(newName) {
+    setSaveStatus(null);
+    setPlaylistName(newName);
   }
 
   async function handleLogin() {
@@ -207,7 +213,7 @@ function App() {
             buttonLabel='-'
             onButtonClick={handleRemoveTrack}
             playlistName={playlistName}
-            onNameChange={setPlaylistName}
+            onNameChange={handleNameChange}
             onSavePlaylist={handleSavePlaylist}
             saveStatus={saveStatus} 
             />
